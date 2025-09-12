@@ -2,7 +2,12 @@
 
 <br>
 
+클라이언트까지만 만들고 DirectX12로 포팅하는 작업을 먼저하였기에 서버는 미완성인채로 두었습니다. 
+
+<br>
+
 [유튜브 영상](https://youtu.be/oKvYUiVG-g8?si=Tr09Sb1_L0cLxAzb)
+
 
 <br>
 
