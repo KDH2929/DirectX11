@@ -2,7 +2,7 @@
 
 <br>
 
-[유튜브 영상](https://youtu.be/LtHkrbhR0IQ?si=OpMynCfWETIsJcHL)
+[유튜브 영상](https://youtu.be/oKvYUiVG-g8?si=Tr09Sb1_L0cLxAzb)
 
 <br>
 
