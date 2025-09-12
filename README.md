@@ -34,9 +34,9 @@
 
 <br>
 
-- **충돌 처리**
+- **PhysX 라이브러리 연동**
   - PhysX 라이브러리를 활용한 충돌 처리
-  - CollisionResponse, CollisionLayer, CollisionMatrix 개념 적용
+  - PhysX API를 엔진 내부에서 사용하기 쉽도록 Wrapper 클래스로 추상화
 
 <br>
 
