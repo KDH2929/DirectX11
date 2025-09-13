@@ -254,32 +254,32 @@ void HeightMapTerrain::CreateMeshFromHeightMap()
 
 XMFLOAT3 HeightMapTerrain::CalculateNormal(int x, int z)
 {
-    // 중심 높이
-    float centerY = heightData[z * mapWidth + x] / 255.0f * heightScale;
+    // clamp를 통한 경계처리
+    // 맵 경계를 벗어나는 좌표의 경우 HeightData 접근시에 Out of Index 에러가 발생할 수 있다.
+    int cx = std::clamp(x, 0, mapWidth - 1);
+    int cz = std::clamp(z, 0, mapHeight - 1);
 
-    // 월드 좌표 보간을 위해 정점 간 거리 사용
-    float vx = static_cast<float>(x) * vertexDistance;
-    float vz = static_cast<float>(z) * vertexDistance;
+    // 중심 좌표
+    float centerY = heightData[cz * mapWidth + cx] / 255.0f * heightScale;
+    XMFLOAT3 pCenter = { x * vertexDistance, centerY, z * vertexDistance };
 
-    XMFLOAT3 pCenter = { vx, centerY, vz };
+    // 오른쪽 좌표
+    int rx = std::clamp(x + 1, 0, mapWidth - 1);
+    float rightY = heightData[z * mapWidth + rx] / 255.0f * heightScale;
+    XMFLOAT3 pRight = { (x + 1) * vertexDistance, rightY, z * vertexDistance };
 
-    // 오른쪽 (x+1, z)
-    float rightY = (x < mapWidth - 1) ? heightData[z * mapWidth + (x + 1)] / 255.0f * heightScale : centerY;
-    XMFLOAT3 pRight = { (x + 1) * vertexDistance, rightY, vz };
+    // 위쪽 좌표
+    int uz = std::clamp(z + 1, 0, mapHeight - 1);
+    float upY = heightData[uz * mapWidth + x] / 255.0f * heightScale;
+    XMFLOAT3 pUp = { x * vertexDistance, upY, (z + 1) * vertexDistance };
 
-    // 위쪽 (x, z+1)
-    float upY = (z < mapHeight - 1) ? heightData[(z + 1) * mapWidth + x] / 255.0f * heightScale : centerY;
-    XMFLOAT3 pUp = { vx, upY, (z + 1) * vertexDistance };
-
-    // 두 벡터 생성: 오른쪽, 위쪽
+    // 외적 -> 법선 -> 정규화
     XMVECTOR vecRight = XMVectorSubtract(XMLoadFloat3(&pRight), XMLoadFloat3(&pCenter));
     XMVECTOR vecUp = XMVectorSubtract(XMLoadFloat3(&pUp), XMLoadFloat3(&pCenter));
-
-    // 외적 -> 노멀 벡터
-    XMVECTOR normal = XMVector3Cross(vecUp, vecRight);
-    normal = XMVector3Normalize(normal);
+    XMVECTOR normal = XMVector3Normalize(XMVector3Cross(vecUp, vecRight));
 
     XMFLOAT3 normalOut;
     XMStoreFloat3(&normalOut, normal);
     return normalOut;
 }
+
