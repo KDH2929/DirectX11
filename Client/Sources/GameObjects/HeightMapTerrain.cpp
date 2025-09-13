@@ -40,7 +40,7 @@ bool HeightMapTerrain::Initialize(Renderer* renderer)
 
     device->CreateBuffer(&ibd, &iinitData, indexBuffer.GetAddressOf());
 
-    // Shader ¼³Á¤
+    // Shader ì„¤ì •
     auto shaderManager = renderer->GetShaderManager();
     shaderInfo.vertexShaderName = L"PhongVertexShader";
     shaderInfo.pixelShaderName = L"PhongPixelShader";
@@ -49,22 +49,22 @@ bool HeightMapTerrain::Initialize(Renderer* renderer)
     pixelShader = shaderManager->GetPixelShader(shaderInfo.pixelShaderName);
     inputLayout = shaderManager->GetInputLayout(shaderInfo.vertexShaderName);
 
-    // Rasterizer ¼³Á¤
+    // Rasterizer ì„¤ì •
     if (!CreateRasterizerState(device)) { 
         return false; 
     }
 
-    // Material ±âº»°ª
+    // Material ê¸°ë³¸ê°’
     materialData.ambient = XMFLOAT3(0.2f, 0.2f, 0.2f);
     materialData.diffuse = XMFLOAT3(0.6f, 0.6f, 0.6f);
     materialData.specular = XMFLOAT3(0.1f, 0.1f, 0.1f);
     materialData.useTexture = 0;
 
 
-    // Äİ¶óÀÌ´õ Å©±â ¼³Á¤
-    PxVec3 halfExtents = { 30.0f, 5.0f, 30.0f };  // ÃÊ±â°ª
+    // ì½œë¼ì´ë” í¬ê¸° ì„¤ì •
+    PxVec3 halfExtents = { 30.0f, 5.0f, 30.0f };  // ì´ˆê¸°ê°’
 
-    // ÁöÇü ¸Ş½ÃÀÇ Æø°ú ³ôÀÌ¸¦ °í·ÁÇÏ¿© Äİ¶óÀÌ´õ Å©±â Á¶Á¤
+    // ì§€í˜• ë©”ì‹œì˜ í­ê³¼ ë†’ì´ë¥¼ ê³ ë ¤í•˜ì—¬ ì½œë¼ì´ë” í¬ê¸° ì¡°ì •
     float terrainWidth = static_cast<float>(mapWidth) * vertexDistance;
     float terrainHeight = static_cast<float>(mapHeight) * vertexDistance;
 
@@ -78,7 +78,7 @@ bool HeightMapTerrain::Initialize(Renderer* renderer)
         terrainPos.z + halfExtents.z
     );
 
-    // Äİ¶óÀÌ´õ »ı¼º
+    // ì½œë¼ì´ë” ìƒì„±
     PxRigidStatic* actor = PhysicsManager::GetInstance()->CreateStaticBox(
         colliderCenter,
         halfExtents,
@@ -102,7 +102,7 @@ void HeightMapTerrain::Render(Renderer* renderer)
 
     auto context = renderer->GetDeviceContext();
 
-    // ¼ÎÀÌ´õ & ÀÔ·Â ·¹ÀÌ¾Æ¿ô
+    // ì…°ì´ë” & ì…ë ¥ ë ˆì´ì•„ì›ƒ
     context->IASetInputLayout(inputLayout.Get());
     context->VSSetShader(vertexShader.Get(), nullptr, 0);
     context->PSSetShader(pixelShader.Get(), nullptr, 0);
@@ -114,14 +114,14 @@ void HeightMapTerrain::Render(Renderer* renderer)
     context->OMSetDepthStencilState(depthStencilState.Get(), 0);
 
 
-    // Á¤Á¡/ÀÎµ¦½º ¹öÆÛ ¼³Á¤
+    // ì •ì /ì¸ë±ìŠ¤ ë²„í¼ ì„¤ì •
     UINT stride = sizeof(MeshVertex);
     UINT offset = 0;
     context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
     context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // CB_MVP (b0) ±¸¼º
+    // CB_MVP (b0) êµ¬ì„±
     CB_MVP mvpData;
     XMMATRIX view = renderer->GetCamera()->GetViewMatrix();
     XMMATRIX proj = renderer->GetCamera()->GetProjectionMatrix();
@@ -134,15 +134,15 @@ void HeightMapTerrain::Render(Renderer* renderer)
     context->UpdateSubresource(constantMVPBuffer.Get(), 0, nullptr, &mvpData, 0, 0);
     context->VSSetConstantBuffers(0, 1, constantMVPBuffer.GetAddressOf());  // b0
 
-    // Á¶¸í (b1)
+    // ì¡°ëª… (b1)
     ID3D11Buffer* lightCB = renderer->GetLightingConstantBuffer();
     context->PSSetConstantBuffers(1, 1, &lightCB);
 
-    // ¸ÓÆ¼¸®¾ó (b2)
+    // ë¨¸í‹°ë¦¬ì–¼ (b2)
     context->UpdateSubresource(constantMaterialBuffer.Get(), 0, nullptr, &materialData, 0, 0);
     context->PSSetConstantBuffers(2, 1, constantMaterialBuffer.GetAddressOf());
 
-    // µå·Î¿ì
+    // ë“œë¡œìš°
     context->DrawIndexed(static_cast<UINT>(indices.size()), 0, 0);
 
 
@@ -169,12 +169,11 @@ bool HeightMapTerrain::CreateRasterizerState(ID3D11Device* device)
 
 void HeightMapTerrain::LoadHeightMap()
 {
-
     ScratchImage image;
     HRESULT hr = LoadFromWICFile(heightMapPath.c_str(), WIC_FLAGS_NONE, nullptr, image);
     if (FAILED(hr))
     {
-        // ·Îµå ½ÇÆĞ ½Ã ±×³É ¸®ÅÏ
+        // ë¡œë“œ ì‹¤íŒ¨ ì‹œ ê·¸ëƒ¥ ë¦¬í„´
         return;
     }
 
@@ -183,20 +182,20 @@ void HeightMapTerrain::LoadHeightMap()
     mapHeight = static_cast<int>(img->height);
 
     heightData.clear();
-    heightData.reserve(mapWidth * mapHeight);
+    heightData.resize(mapWidth * mapHeight);
 
-    // DirectXTex ±âº»À¸·Î R8G8B8A8_UNORMÀ¸·Î ¿Ã¶ó¿Â´Ù°í °¡Á¤
-    const int bytesPerPixel = 4;
+    // DirectXTex ê¸°ë³¸ìœ¼ë¡œ R8G8B8A8_UNORMìœ¼ë¡œ ì˜¬ë¼ì˜¨ë‹¤ê³  ê°€ì •
+    constexpr int bytesPerPixel = 4;
     for (int y = 0; y < mapHeight; ++y)
     {
-        // ÇÑ Çà(row)ÀÇ ¸Ş¸ğ¸® ½ÃÀÛ ÁÖ¼Ò
-        uint8_t* row = reinterpret_cast<uint8_t*>(img->pixels + img->rowPitch * y);
+        // í•œ í–‰(row)ì˜ ë©”ëª¨ë¦¬ ì‹œì‘ ì£¼ì†Œ
+        const uint8_t* row = img->pixels + img->rowPitch * y;
 
         for (int x = 0; x < mapWidth; ++x)
         {
-            // x¹øÂ° ÇÈ¼¿ÀÇ Red Ã¤³Î(¶Ç´Â ±×³É ±×·¹ÀÌ½ºÄÉÀÏ·Î °¡Á¤ÇßÀ» ¶§ ÇÑ Ã¤³Î)À» ÀĞ´Â´Ù
+            // xë²ˆì§¸ í”½ì…€ì˜ Red ì±„ë„(ë˜ëŠ” ê·¸ëƒ¥ ê·¸ë ˆì´ìŠ¤ì¼€ì¼ë¡œ ê°€ì •í–ˆì„ ë•Œ í•œ ì±„ë„)ì„ ì½ëŠ”ë‹¤
             uint8_t gray = row[x * bytesPerPixel + 0];
-            heightData.push_back(gray);
+            heightData[y * mapWidth + x] = gray;
         }
     }
 }
@@ -206,37 +205,37 @@ void HeightMapTerrain::CreateMeshFromHeightMap()
     vertices.clear();
     indices.clear();
 
-    // vertices »ı¼º
+    // vertices ìƒì„±
     for (int z = 0; z < mapHeight; ++z)
     {
         for (int x = 0; x < mapWidth; ++x)
         {
             if (!heightData.empty()) {
-                // ³ôÀÌ °è»ê
+                // ë†’ì´ ê³„ì‚°
                 float height = heightData[z * mapWidth + x] / 255.0f * heightScale;
 
                 float posX = (float)x * vertexDistance;
                 float posZ = (float)z * vertexDistance;
                 XMFLOAT3 pos = XMFLOAT3(posX, height, posZ);
 
-                // ³ë¸Ö °è»ê
+                // ë…¸ë©€ ê³„ì‚°
                 XMFLOAT3 normal = CalculateNormal(x, z);
 
-                // UV °è»ê
+                // UV ê³„ì‚°
                 XMFLOAT2 uv = XMFLOAT2((float)x / mapWidth, (float)z / mapHeight);
                 vertices.push_back({ pos, normal, uv });
             }
         }
     }
 
-    // indices »ı¼º
+    // indices ìƒì„±
     for (int z = 0; z < mapHeight - 1; ++z)
     {
         for (int x = 0; x < mapWidth - 1; ++x)
         {
             int start = z * mapWidth + x;
 
-            // ÀÎµ¦½º ¹üÀ§ °è»ê
+            // ì¸ë±ìŠ¤ ë²”ìœ„ ê³„ì‚°
             if (start + mapWidth + 1 < vertices.size()) {
                 indices.push_back(start);
                 indices.push_back(start + mapWidth);
@@ -252,28 +251,28 @@ void HeightMapTerrain::CreateMeshFromHeightMap()
 
 XMFLOAT3 HeightMapTerrain::CalculateNormal(int x, int z)
 {
-    // Áß½É ³ôÀÌ
+    // ì¤‘ì‹¬ ë†’ì´
     float centerY = heightData[z * mapWidth + x] / 255.0f * heightScale;
 
-    // ¿ùµå ÁÂÇ¥ º¸°£À» À§ÇØ Á¤Á¡ °£ °Å¸® »ç¿ë
+    // ì›”ë“œ ì¢Œí‘œ ë³´ê°„ì„ ìœ„í•´ ì •ì  ê°„ ê±°ë¦¬ ì‚¬ìš©
     float vx = static_cast<float>(x) * vertexDistance;
     float vz = static_cast<float>(z) * vertexDistance;
 
     XMFLOAT3 pCenter = { vx, centerY, vz };
 
-    // ¿À¸¥ÂÊ (x+1, z)
+    // ì˜¤ë¥¸ìª½ (x+1, z)
     float rightY = (x < mapWidth - 1) ? heightData[z * mapWidth + (x + 1)] / 255.0f * heightScale : centerY;
     XMFLOAT3 pRight = { (x + 1) * vertexDistance, rightY, vz };
 
-    // À§ÂÊ (x, z+1)
+    // ìœ„ìª½ (x, z+1)
     float upY = (z < mapHeight - 1) ? heightData[(z + 1) * mapWidth + x] / 255.0f * heightScale : centerY;
     XMFLOAT3 pUp = { vx, upY, (z + 1) * vertexDistance };
 
-    // µÎ º¤ÅÍ »ı¼º: ¿À¸¥ÂÊ, À§ÂÊ
+    // ë‘ ë²¡í„° ìƒì„±: ì˜¤ë¥¸ìª½, ìœ„ìª½
     XMVECTOR vecRight = XMVectorSubtract(XMLoadFloat3(&pRight), XMLoadFloat3(&pCenter));
     XMVECTOR vecUp = XMVectorSubtract(XMLoadFloat3(&pUp), XMLoadFloat3(&pCenter));
 
-    // ¿ÜÀû -> ³ë¸Ö º¤ÅÍ
+    // ì™¸ì  -> ë…¸ë©€ ë²¡í„°
     XMVECTOR normal = XMVector3Cross(vecUp, vecRight);
     normal = XMVector3Normalize(normal);
 
