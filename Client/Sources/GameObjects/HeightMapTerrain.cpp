@@ -184,11 +184,14 @@ void HeightMapTerrain::LoadHeightMap()
     heightData.clear();
     heightData.resize(mapWidth * mapHeight);
 
-    // DirectXTex 기본으로 R8G8B8A8_UNORM으로 올라온다고 가정
+    // DirectXTex는 기본적으로 R8G8B8A8_UNORM 형식으로 로드
+    // 8Bit * RGBA 4채널 = 32Bit = 4Byte
+    
     constexpr int bytesPerPixel = 4;
     for (int y = 0; y < mapHeight; ++y)
     {
         // 한 행(row)의 메모리 시작 주소
+        // DirectXTex의 메모리에서 한 줄은 Pitch 이다. (Padding 포함)
         const uint8_t* row = img->pixels + img->rowPitch * y;
 
         for (int x = 0; x < mapWidth; ++x)
