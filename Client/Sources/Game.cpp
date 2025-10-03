@@ -120,6 +120,7 @@ bool Game::Init(HINSTANCE hInstance, int nCmdShow) {
     }
     PhysicsManager::SetInstance(&physicsManager);
 
+    /*
     // 서버 연결 시도
     if (!network.Connect("127.0.0.1", 9999)) {
         MessageBox(nullptr, L"Failed to connect to server.", L"Error", MB_OK | MB_ICONERROR);
@@ -128,6 +129,7 @@ bool Game::Init(HINSTANCE hInstance, int nCmdShow) {
 
     // 수신 스레드 시작
     network.StartRecvThread();
+    */
 
     InputManager::GetInstance().Initialize(hwnd);
     textureManager.Initialize(renderer.GetDevice());
@@ -377,7 +379,7 @@ void Game::Cleanup() {
     ImGui::DestroyContext();
 
     physicsManager.Cleanup();
-    network.Stop();
+    // network.Stop();
 }
 
 void Game::Update(float deltaTime) {
@@ -399,9 +401,11 @@ void Game::Render() {
 void Game::HandleInput(float deltaTime) {
     auto& input = InputManager::GetInstance();
 
+    /*
     if (input.IsKeyJustPressed(VK_SPACE)) {
         network.Send("FIRE");
     }
+    */
 }
 
 void Game::ProcessNetwork() {
