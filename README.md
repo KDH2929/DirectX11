@@ -18,7 +18,7 @@
 ## 구현 기능
 
 - 카메라
-- 빌보딩
+- 빌보딩 & 스프라이트
 - PhysX 연동
 - Skybox
 - HeightMap
