@@ -15,7 +15,7 @@ bool PlayerFlight::Initialize(Renderer* renderer)
 {
     Flight::Initialize(renderer);
 
-    // Ä«¸Ş¶ó ÃÊ±âÈ­
+    // ì¹´ë©”ë¼ ì´ˆê¸°í™”
     camera = std::make_shared<Camera>();
 
     XMFLOAT3 modelPosition = GetPosition();
@@ -25,7 +25,7 @@ bool PlayerFlight::Initialize(Renderer* renderer)
     XMVECTOR initialQuat = XMQuaternionRotationRollPitchYaw(initialEuler.x, initialEuler.y, initialEuler.z);
     camera->SetRotationQuat(initialQuat);
 
-    // perspective ¼³Á¤
+    // perspective ì„¤ì •
     float aspectRatio = static_cast<float>(renderer->GetViewportWidth()) / renderer->GetViewportHeight();
     camera->SetPerspective(XM_PIDIV4, aspectRatio, 0.1f, 2000.0f);
 
@@ -34,7 +34,7 @@ bool PlayerFlight::Initialize(Renderer* renderer)
     cameraController.SetCameraMode(CameraMode::FlightThirdPerson);
     cameraController.SetCameraOffset(40.0f, 10.0f);
 
-    // ¸¶¿ì½º Ä¿¼­¸¦ ¼û±â±â
+    // ë§ˆìš°ìŠ¤ ì»¤ì„œë¥¼ ìˆ¨ê¸°ê¸°
     InputManager::GetInstance().SetCursorHidden(true);
 
     auto muzzleFlashTexture = textureManager.LoadTexture(L"Assets/Textures/MuzzleFlash2.png");
@@ -73,8 +73,8 @@ bool PlayerFlight::Initialize(Renderer* renderer)
         renderer->AddGameObject(smokeRight);
     }
 
-    // Bullet ÃÊ±âÈ­
-    // BulletMesh ·Îµù
+    // Bullet ì´ˆê¸°í™”
+    // BulletMesh ë¡œë”©
     std::string bulletPath = "Assets/Bullet/bullet.obj";
     
     bulletTexture = textureManager.LoadTexture(L"Assets/Bullet/Textures/bullet_DefaultMaterial_BaseColor.png");
@@ -102,15 +102,15 @@ bool PlayerFlight::Initialize(Renderer* renderer)
     actor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
     actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 
-    // ¹°¸® ÀçÁú »ı¼º ¹× ¹İ¹ß·Â, ¸¶Âû·Â ¼³Á¤
+    // ë¬¼ë¦¬ ì¬ì§ˆ ìƒì„± ë° ë°˜ë°œë ¥, ë§ˆì°°ë ¥ ì„¤ì •
     PxMaterial* material = PhysicsManager::GetInstance()->GetDefaultMaterial();
-    material->setRestitution(0.0f);  // ¹İ¹ß·Â Á¦°Å
-    material->setStaticFriction(0.0f); // Á¤Àû ¸¶Âû·Â Á¦°Å
-    material->setDynamicFriction(0.0f); // µ¿Àû ¸¶Âû·Â Á¦°Å
+    material->setRestitution(0.0f);  // ë°˜ë°œë ¥ ì œê±°
+    material->setStaticFriction(0.0f); // ì •ì  ë§ˆì°°ë ¥ ì œê±°
+    material->setDynamicFriction(0.0f); // ë™ì  ë§ˆì°°ë ¥ ì œê±°
 
     // actor->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, true);
 
-    // °´Ã¼¿¡ ¹°¸® ÀçÁú ¼³Á¤
+    // ê°ì²´ì— ë¬¼ë¦¬ ì¬ì§ˆ ì„¤ì •
     PxShape* shape;
     actor->getShapes(&shape, 1);
     shape->setMaterials(&material, 1);
@@ -118,24 +118,24 @@ bool PlayerFlight::Initialize(Renderer* renderer)
     BindPhysicsActor(actor);
 
     if (auto* dynamicActor = physicsActor->is<PxRigidDynamic>()) {
-        // Kinematic ¼³Á¤À» ÅëÇØ ¼Óµµ³ª È¸Àü ¹İÀÀÀ» Â÷´Ü
+        // Kinematic ì„¤ì •ì„ í†µí•´ ì†ë„ë‚˜ íšŒì „ ë°˜ì‘ì„ ì°¨ë‹¨
         // dyn->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
-        dynamicActor->setLinearVelocity(PxVec3(0, 0, 0));  // ÀÌµ¿ ¹æÁö
-        dynamicActor->setAngularVelocity(PxVec3(0, 0, 0)); // È¸Àü ¹æÁö
+        dynamicActor->setLinearVelocity(PxVec3(0, 0, 0));  // ì´ë™ ë°©ì§€
+        dynamicActor->setAngularVelocity(PxVec3(0, 0, 0)); // íšŒì „ ë°©ì§€
     }
 
     SetColliderOffset(XMFLOAT3(0.0f, 5.0f, 0.0f));
 
 
 
-    // Bullet Ãæµ¹ÀÌº¥Æ® ¼³Á¤
+    // Bullet ì¶©ëŒì´ë²¤íŠ¸ ì„¤ì •
 
-    // ÇÑ ¹ø¸¸ µî·ÏÇÏµµ·Ï static ÇÃ·¡±× »ç¿ë
+    // í•œ ë²ˆë§Œ ë“±ë¡í•˜ë„ë¡ static í”Œë˜ê·¸ ì‚¬ìš©
     static bool bulletEventHandlersRegistered = false;
     if (!bulletEventHandlersRegistered) {
         bulletEventHandlersRegistered = true;
 
-        // ÃÑ¾ËÀÌ Àû Flight¿¡ ºÎµúÈ÷¸é µ¥¹ÌÁö Ã³¸®
+        // ì´ì•Œì´ ì  Flightì— ë¶€ë”ªíˆë©´ ë°ë¯¸ì§€ ì²˜ë¦¬
         CollisionEventHandler hitEnemyHandler;
         hitEnemyHandler.Matches = [](PxActor* a, PxActor* b) {
             auto* objA = static_cast<GameObject*>(a->userData);
@@ -156,14 +156,14 @@ bool PlayerFlight::Initialize(Renderer* renderer)
 
         PhysicsManager::GetInstance()->RegisterHitHandler(hitEnemyHandler);
 
-        // ÃÑ¾ËÀÌ ºñÇà±â°¡ ¾Æ´Ñ ´Ù¸¥ ¹°Ã¼(ÁöÇü µî)¿Í ºÎµúÈ÷¸é ±×³É »ç¶óÁü
+        // ì´ì•Œì´ ë¹„í–‰ê¸°ê°€ ì•„ë‹Œ ë‹¤ë¥¸ ë¬¼ì²´(ì§€í˜• ë“±)ì™€ ë¶€ë”ªíˆë©´ ê·¸ëƒ¥ ì‚¬ë¼ì§
         CollisionEventHandler hitOtherHandler;
         hitOtherHandler.Matches = [](PxActor* a, PxActor* b) {
             auto* objA = static_cast<GameObject*>(a->userData);
             auto* objB = static_cast<GameObject*>(b->userData);
             auto* bullet = dynamic_cast<Bullet*>(objA);
             auto* flight = dynamic_cast<Flight*>(objB);
-            return bullet && !flight;  // ºñÇà±â°¡ ¾Æ´Ñ ´ë»ó°ú Ãæµ¹
+            return bullet && !flight;  // ë¹„í–‰ê¸°ê°€ ì•„ë‹Œ ëŒ€ìƒê³¼ ì¶©ëŒ
             };
         hitOtherHandler.Callback = [](PxActor* a, PxActor* b) {
             auto* bullet = static_cast<Bullet*>(a->userData);
@@ -179,14 +179,14 @@ void PlayerFlight::Update(float deltaTime) {
     InputManager& input = InputManager::GetInstance();
     Flight::Update(deltaTime);
 
-    SyncFromPhysics();  // ¹°¸® »óÅÂ¿¡¼­ ºñÇà±â »óÅÂ µ¿±âÈ­
+    SyncFromPhysics();  // ë¬¼ë¦¬ ìƒíƒœì—ì„œ ë¹„í–‰ê¸° ìƒíƒœ ë™ê¸°í™”
 
     float yawInput = 0.0f;
     float pitchInput = 0.0f;
     float rollInput = 0.0f;
     float moveInput = 0.0f;
 
-    // ÀÔ·Â Ã³¸®
+    // ì…ë ¥ ì²˜ë¦¬
     if (input.IsKeyHeld('Z')) yawInput = -1.0f;
     if (input.IsKeyHeld('C')) yawInput = 1.0f;
 
@@ -203,19 +203,13 @@ void PlayerFlight::Update(float deltaTime) {
     float pitchSpeed = XM_PIDIV2;
     float rollSpeed = XM_PIDIV2;
 
-    // ·ÎÄÃ ¹æÇâ º¤ÅÍ °è»ê
+    // ë¡œì»¬ ë°©í–¥ ë²¡í„° ê³„ì‚°
     localForward = XMVector3Rotate(XMVectorSet(0, 0, 1, 0), rotationQuat);
     localRight = XMVector3Rotate(XMVectorSet(1, 0, 0, 0), rotationQuat);
     localUp = XMVector3Rotate(XMVectorSet(0, 1, 0, 0), rotationQuat);
-
-    
-    // Ä«¸Ş¶óÀÇ ¹æÇâÀ» ±âÁØÀ¸·Î ºñÇà±â ÀÌµ¿
-    // XMFLOAT3 cameraForwardFloat = camera->GetForwardVector();  // Ä«¸Ş¶ó°¡ ÇâÇÏ´Â ¹æÇâ (XMFLOAT3)
-    // XMVECTOR cameraForward = XMLoadFloat3(&cameraForwardFloat);  // XMVECTOR·Î º¯È¯
-    // localForward = XMVector3Normalize(cameraForward);  // Ä«¸Ş¶ó ¹æÇâÀ¸·Î ¸ÂÃß±â
     
 
-    // È¸Àü Àû¿ë (Yaw, Pitch, Roll)
+    // íšŒì „ ì ìš© (Yaw, Pitch, Roll)
     XMVECTOR qYaw = XMQuaternionRotationAxis(localUp, yawInput * yawSpeed * deltaTime);
     XMVECTOR qPitch = XMQuaternionRotationAxis(localRight, pitchInput * pitchSpeed * deltaTime);
     XMVECTOR qRoll = XMQuaternionRotationAxis(localForward, rollInput * rollSpeed * deltaTime);
@@ -225,7 +219,7 @@ void PlayerFlight::Update(float deltaTime) {
     rotationQuat = XMQuaternionMultiply(rotationQuat, qRoll);
     rotationQuat = XMQuaternionNormalize(rotationQuat);
 
-    // °¡¼Óµµ ±â¹İ ¼Óµµ Á¶Àı
+    // ê°€ì†ë„ ê¸°ë°˜ ì†ë„ ì¡°ì ˆ
     float targetSpeed = 0.0f;
     if (moveInput > 0.0f)       targetSpeed = maxSpeed;
     else if (moveInput < 0.0f)  targetSpeed = -maxSpeed;
@@ -241,7 +235,7 @@ void PlayerFlight::Update(float deltaTime) {
 
     speed += accel * deltaTime;
 
-    // °¨¼Ó Àû¿ë
+    // ê°ì† ì ìš©
     if (targetSpeed == 0.0f) {
         if (speed > 0.0f)
             speed = std::max<float>(0.0f, speed - dragAccel * deltaTime);
@@ -251,7 +245,7 @@ void PlayerFlight::Update(float deltaTime) {
 
     speed = std::clamp(speed, -maxSpeed, maxSpeed);
 
-    // ÀÌµ¿ °è»ê (ÀÌµ¿ ¹æÇâ °í·Á)
+    // ì´ë™ ê³„ì‚° (ì´ë™ ë°©í–¥ ê³ ë ¤)
     XMVECTOR moveVec = localForward * (speed * deltaTime); 
     XMFLOAT3 pos = GetPosition();
     XMVECTOR posVec = XMLoadFloat3(&pos) + moveVec;
@@ -264,62 +258,15 @@ void PlayerFlight::Update(float deltaTime) {
 
     cameraController.Update(camera.get(), updatedPos, deltaTime);
 
-    // Ä«¸Ş¶ó È¸ÀüÀ» ±âÁØÀ¸·Î ºñÇà±â È¸Àü º¸°£ Àû¿ë
+    // ì¹´ë©”ë¼ íšŒì „ì„ ê¸°ì¤€ìœ¼ë¡œ ë¹„í–‰ê¸° íšŒì „ ë³´ê°„ ì ìš©
 
     if (rollInput == 0.0f) {
 
         XMVECTOR cameraQuat = camera->GetRotationQuat();
-        float followSpeed = 2.0f; // º¸°£ ¼Óµµ °è¼ö
+        float followSpeed = 2.0f;
         rotationQuat = XMQuaternionSlerp(rotationQuat, cameraQuat, followSpeed * deltaTime);
         rotationQuat = XMQuaternionNormalize(rotationQuat);
         SetRotationQuat(rotationQuat);
-        
-
-
-        /*
-        // °¢µµ¿¡ µû¶ó ÀÚ¿¬½º·¯¿î Slerp ºñÀ² °è»ê
-        XMVECTOR currentQuat = rotationQuat;
-        XMVECTOR targetQuat = camera->GetRotationQuat();
-
-        // ³»Àû ¹× ¹İÀü Ã³¸®
-        float dot = XMVectorGetX(XMQuaternionDot(currentQuat, targetQuat));
-        if (dot < 0.0f)
-        {
-            targetQuat = XMVectorNegate(targetQuat);
-            dot = -dot;
-        }
-        dot = std::clamp(dot, -1.0f, 1.0f);
-
-        // °¢µµ °è»ê
-        float angle = acosf(dot) * 2.0f;
-        if (angle < 1e-5f)
-            return;
-
-        // 1. Slerp º¸°£ ºñÀ² °è»ê (°¨¼Ó ´À³¦ »ì¸²)
-        float slerpSpeed = 2.0f; // °¨¼Ó º¸°£ °è¼ö
-        float t = slerpSpeed * deltaTime;
-        t = std::min(t, 1.0f); 
-
-        // 2. Slerp ¼öÇà
-        XMVECTOR newQuat = XMQuaternionSlerp(currentQuat, targetQuat, t);
-
-        // 3. ½ÇÁ¦ È¸ÀüµÈ °¢µµ ÃøÁ¤
-        float newDot = XMVectorGetX(XMQuaternionDot(currentQuat, newQuat));
-        float newAngle = acosf(std::clamp(newDot, -1.0f, 1.0f)) * 2.0f;
-
-        // 4. ÃÖ´ë È¸Àü·® Á¦ÇÑ
-        float maxAnglePerSecond = XMConvertToRadians(90.0f);
-        float maxStep = maxAnglePerSecond * deltaTime;
-
-        if (newAngle > maxStep)
-        {
-            float limitedT = maxStep / angle;
-            newQuat = XMQuaternionSlerp(currentQuat, targetQuat, limitedT);
-        }
-
-        rotationQuat = XMQuaternionNormalize(newQuat);
-        SetRotationQuat(rotationQuat);
-        */
     }
 
     
@@ -345,9 +292,9 @@ void PlayerFlight::Render(Renderer* renderer)
 void PlayerFlight::Fire()
 {
     if (lastFireTime < fireCooldown)
-        return; // ÄğÅ¸ÀÓÀÌ Áö³ªÁö ¾Ê¾ÒÀ¸¸é ¹ß»çÇÏÁö ¾ÊÀ½
+        return; // ì¿¨íƒ€ì„ì´ ì§€ë‚˜ì§€ ì•Šì•˜ìœ¼ë©´ ë°œì‚¬í•˜ì§€ ì•ŠìŒ
 
-    lastFireTime = 0.0f; // Å¸ÀÌ¸Ó ¸®¼Â
+    lastFireTime = 0.0f; // íƒ€ì´ë¨¸ ë¦¬ì…‹
 
     // DebugManager::GetInstance().AddOnScreenMessage("Fire!", 5.0f);
 
@@ -418,7 +365,7 @@ void PlayerFlight::Fire()
 
     float bulletSpeed = 600.0f;
 
-    // ¶÷´ÙÇÔ¼ö
+    // ëŒë‹¤í•¨ìˆ˜
     auto fireBullet = [&](const XMFLOAT3& spawnPos)
         {
             for (auto& bullet : bulletPool) {
@@ -428,23 +375,23 @@ void PlayerFlight::Fire()
                     bullet->Activate(spawnPos, bulletDirection, bulletSpeed);
                     bullet->SetMaxLifeTime(3.0f);
 
-                    // ÃÑ¾ËÀÇ local forward ±âÁØ (¿¹: -X ±âÁØÀ¸·Î ¸ğµ¨¸µµÈ °æ¿ì)
+                    // ì´ì•Œì˜ local forward ê¸°ì¤€ (ì˜ˆ: -X ê¸°ì¤€ìœ¼ë¡œ ëª¨ë¸ë§ëœ ê²½ìš°)
                     XMVECTOR bulletLocalForward = XMVectorSet(-1, 0, 0, 0);
                     XMVECTOR bulletForwardVec = XMVector3Rotate(bulletLocalForward, rotationQuat);
                     XMVECTOR bulletUpVec = flightUpVec;
                     XMVECTOR bulletRightVec = XMVector3Normalize(XMVector3Cross(bulletUpVec, bulletForwardVec));
                    
 
-                    // È¸Àü Çà·Ä »ı¼º
+                    // íšŒì „ í–‰ë ¬ ìƒì„±
                     XMMATRIX bulletRotMatrix = XMMatrixIdentity();
                     bulletRotMatrix.r[0] = bulletRightVec;
                     bulletRotMatrix.r[1] = bulletUpVec;
                     bulletRotMatrix.r[2] = bulletForwardVec;
 
-                    // ÄõÅÍ´Ï¾ğ º¯È¯
+                    // ì¿¼í„°ë‹ˆì–¸ ë³€í™˜
                     XMVECTOR bulletRotationQuat = XMQuaternionRotationMatrix(bulletRotMatrix);
 
-                    // PhysX È¸Àü Àû¿ë
+                    // PhysX íšŒì „ ì ìš©
                     if (auto* actor = static_cast<physx::PxRigidDynamic*>(bullet->GetPhysicsActor())) {
                         XMFLOAT4 quatFloat4;
                         XMStoreFloat4(&quatFloat4, bulletRotationQuat);
