@@ -4,8 +4,6 @@
 
 [유튜브 영상](https://youtu.be/oKvYUiVG-g8?si=Tr09Sb1_L0cLxAzb)
 
-[지형 렌더링 시 문제](https://wandering-rumba-865.notion.site/DirectX11-26caba645d3280c59d1fcec67ec491bd)
-
 <br>
 
 ## 개발 개요
